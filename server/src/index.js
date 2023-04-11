@@ -61,7 +61,9 @@ app.put('/api/albums/:id', async (req, res) => {
       await db
         .collection('albums')
         .updateOne({ _id: req.params.id }, { $set: album });
+      console.log('Album updated successfully');
     } else {
+      console.error('Album not found');
       res.status(404).json({ message: 'Album not found' });
     }
   } catch (error) {
