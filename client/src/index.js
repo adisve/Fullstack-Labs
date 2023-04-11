@@ -1,36 +1,39 @@
+import './styles.scss';
+import { createTable, createNewAlbumButton, createHeader } from './utils.js';
+
+const url = 'http://localhost:8080/api';
+
 async function start() {
-  let root = document.querySelector('#root');
-  getAllAlbums().then((albumsJSON) => {
-    let albums = JSON.parse(albumsJSON);
-    /* Create table rows to add to table */
-    let tableRows = albums.map((album) => {
-      return `
-                    <tr>
-                        <th>${album.title}</th>
-                        <th>${album.artist}</th>
-                        <th>${album.year}</th>
-                        <th${album.genre}</th>
-                    </tr>
-                `;
-    });
-    let content = `
-                <table>${tableRows}</table>
-            `;
-    root.innerHTML = content;
-  });
+  createHeader();
+  createNewAlbumButton();
+  createTable();
 }
 
-async function getAllAlbums() {
-  let response = await fetch('http://localhost:3000/api/albums');
+async function getAlbumsByTitle(title) {
+  let response = await fetch(`${url}/albums/${title}`);
   let albums = await response.json();
   return albums;
 }
 
-async function getAlbumsByTitle(title) {}
+async function createNewAlbum(title, artist, year, genre, tracks) {
+  let response = await fetch(`${url}/albums/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: title,
+      artist: artist,
+      year: year,
+      genre: genre,
+      tracks: tracks,
+    }),
+  });
+  let album = await response.json();
+  return album;
+}
 
-async function createNewAlbum(title, artist, year, genre, tracks) {}
 
-async function updateAlbum(id) {}
 
 async function deleteAlbum(id) {}
 
