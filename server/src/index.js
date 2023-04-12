@@ -1,7 +1,9 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const { connectToDatabase, getDb } = require('./database');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const { ObjectId } = require('mongodb');
 dotenv.config({ path: './config.env' });
 
 const app = express();
@@ -9,12 +11,14 @@ const port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.redirect('/api/albums');
 });
 
-app.get('/api/albums', async (req, res) => {
+app.get('/api/albums', async (_, res) => {
   const db = getDb();
   const albums = await db.collection('albums').find().toArray();
   res.json(albums);
@@ -56,11 +60,15 @@ app.post('/api/albums', async (req, res) => {
 app.put('/api/albums/:id', async (req, res) => {
   try {
     const db = getDb();
-    if (await db.collection('albums').findOne({ _id: req.params.id })) {
+    if (
+      await db
+        .collection('albums')
+        .findOne({ _id: new ObjectId(req.params.id) })
+    ) {
       const album = req.body;
       await db
         .collection('albums')
-        .updateOne({ _id: req.params.id }, { $set: album });
+        .updateOne({ _id: new ObjectId(req.params.id) }, { $set: album });
       console.log('Album updated successfully');
     } else {
       console.error('Album not found');
@@ -75,8 +83,14 @@ app.put('/api/albums/:id', async (req, res) => {
 app.delete('/api/albums/:id', async (req, res) => {
   try {
     const db = getDb();
-    if (await db.collection('albums').findOne({ _id: req.params.id })) {
-      await db.collection('albums').deleteOne({ _id: req.params.id });
+    if (
+      await db
+        .collection('albums')
+        .findOne({ _id: new ObjectId(req.params.id) })
+    ) {
+      await db
+        .collection('albums')
+        .deleteOne({ _id: new ObjectId(req.params.id) });
     } else {
       res.status(404).json({ message: 'Album not found' });
     }

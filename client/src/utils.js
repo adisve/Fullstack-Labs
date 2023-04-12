@@ -13,48 +13,52 @@ export function createTable() {
   getAllAlbums().then((albums) => {
     const tableHead = `
             <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Artist</th> 
-                  <th>Year</th>
-                  <th>Genre</th>
-                  <th>Edit</th>
-                </tr>
+              <tr>
+                <th>Title</th>
+                <th>Artist</th> 
+                <th>Year</th>
+                <th>Genre</th>
+                <th>Edit</th>
+              </tr>
             </thead>
         `;
     const tableRows = albums.map((album, index) => {
       return `
             <tr id='album-${index}' data-album-id='${album._id}'>
-                <td contentEditable>${album.title}</td>
-                <td contentEditable>${album.artist}</td>
-                <td contentEditable>${album.year}</td>
-                <td contentEditable>${album.genre}</td>
-                <td style="line-height: 50px; text-align: center;">
-                  <button class='button' id='show-details-${index}'>Details</button>
-                  <button class='button-update' id='update-${index}'>Update</button>
-                  <button class='button-delete' id='delete-${index}'>Delete</button>
+              <td contentEditable>${album.title}</td>
+              <td contentEditable>${album.artist}</td>
+              <td contentEditable>${album.year}</td>
+              <td contentEditable>${album.genre}</td>
+              <td style='line-height: 50px; text-align: center;'>
+                <button class='button' id='show-details-${index}'>Details</button>
+                <button class='button-update' id='update-${index}'>Update</button>
+                <button class='button-delete' id='delete-${index}'>Delete</button>
               </td>
             </tr>
         `;
     });
     const content = `
-            <table class="styled-table">
-                ${tableHead}
-                <tbody>
-                  ${tableRows.join('')}
-                </tbody>
-            </table>
-        `;
+        <table id='album-table' class='styled-table'>
+            ${tableHead}
+            <tbody>
+              ${tableRows.join('')}
+            </tbody>
+        </table>
+    `;
     const table = document.createElement('div');
     table.innerHTML = content;
     root.appendChild(table);
 
-    // add event listeners to the update buttons
     const updateButtons = document.querySelectorAll('.button-update');
+    const deleteButtons = document.querySelectorAll('.button-delete');
     updateButtons.forEach((button, index) => {
       button.addEventListener('click', () => {
-        console.log(`Pressed update button for album ${index}`);
         updateAlbum(index);
+      });
+    });
+    deleteButtons.forEach((button, index) => {
+      button.addEventListener('click', () => {
+        deleteAlbum(index);
       });
     });
   });
@@ -75,7 +79,7 @@ export async function getAllAlbums() {
   return albums;
 }
 
-export async function updateAlbum(index) {
+async function updateAlbum(index) {
   const tableRow = document.querySelector(`#album-${index}`);
   const id = tableRow.dataset.albumId;
   const title = tableRow.querySelector('td:nth-child(1)').textContent.trim();
@@ -96,4 +100,14 @@ export async function updateAlbum(index) {
   tableRow.querySelector('td:nth-child(2)').textContent = updatedAlbum.artist;
   tableRow.querySelector('td:nth-child(3)').textContent = updatedAlbum.year;
   tableRow.querySelector('td:nth-child(4)').textContent = updatedAlbum.genre;
+}
+
+async function deleteAlbum(index) {
+  const tableRow = document.querySelector(`#album-${index}`);
+  const id = tableRow.dataset.albumId;
+  await fetch(`${url}/albums/${id}`, {
+    method: 'DELETE',
+  });
+  console.log(tableRow);
+  tableRow.remove();
 }

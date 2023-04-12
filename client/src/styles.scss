@@ -22,12 +22,13 @@
   thead tr {
     background-color: #2ea44f;
     color: #ffffff;
-    text-align: center;
+    text-align: left;
   }
 
   th,
   td {
     padding: 12px 15px;
+    border: 1px solid black;
   }
 
   tbody tr {

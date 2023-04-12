@@ -34,7 +34,4 @@ async function createNewAlbum(title, artist, year, genre, tracks) {
 }
 
 
-
-async function deleteAlbum(id) {}
-
 start();
