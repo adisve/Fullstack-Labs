@@ -8,42 +8,42 @@ export function createHeader() {
   root.appendChild(header);
 }
 
-export function createTable() {
+export function createTable(albums) {
   const root = document.querySelector('#root');
-  getAllAlbums().then((albums) => {
+  if (albums) {
     const tableHead = `
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Artist</th> 
-                <th>Year</th>
-                <th>Genre</th>
-                <th>Edit</th>
-              </tr>
-            </thead>
-        `;
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Artist</th> 
+          <th>Year</th>
+          <th>Genre</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+    `;
     const tableRows = albums.map((album, index) => {
       return `
-            <tr id='album-${index}' data-album-id='${album._id}'>
-              <td contentEditable>${album.title}</td>
-              <td contentEditable>${album.artist}</td>
-              <td contentEditable>${album.year}</td>
-              <td contentEditable>${album.genre}</td>
-              <td style='line-height: 50px; text-align: center;'>
-                <button class='button' id='show-details-${index}'>Details</button>
-                <button class='button-update' id='update-${index}'>Update</button>
-                <button class='button-delete' id='delete-${index}'>Delete</button>
-              </td>
-            </tr>
-        `;
+        <tr id='album-${index}' data-album-id='${album._id}'>
+          <td contentEditable>${album.title}</td>
+          <td contentEditable>${album.artist}</td>
+          <td contentEditable>${album.year}</td>
+          <td contentEditable>${album.genre}</td>
+          <td style='line-height: 50px; text-align: center;'>
+            <button class='button' id='show-details-${index}'>Details</button>
+            <button class='button-update' id='update-${index}'>Update</button>
+            <button class='button-delete' id='delete-${index}'>Delete</button>
+          </td>
+        </tr>
+      `;
     });
     const content = `
-        <table id='album-table' class='styled-table'>
-            ${tableHead}
-            <tbody>
-              ${tableRows.join('')}
-            </tbody>
-        </table>
+      <table id='album-table' class='styled-table'>
+        ${tableHead}
+        <tbody>
+          ${tableRows.join('')}
+        </tbody>
+      </table>
     `;
     const table = document.createElement('div');
     table.innerHTML = content;
@@ -61,7 +61,11 @@ export function createTable() {
         deleteAlbum(index);
       });
     });
-  });
+  } else {
+    getAllAlbums().then((albums) => {
+      createTable(albums);
+    });
+  }
 }
 
 export function createNewAlbumButton() {
@@ -105,9 +109,23 @@ async function updateAlbum(index) {
 async function deleteAlbum(index) {
   const tableRow = document.querySelector(`#album-${index}`);
   const id = tableRow.dataset.albumId;
-  await fetch(`${url}/albums/${id}`, {
+  fetch(`${url}/albums/${id}`, {
     method: 'DELETE',
-  });
-  console.log(tableRow);
-  tableRow.remove();
+  })
+    .then((_) => {
+      const tableBody = document.querySelector('#album-table tbody');
+      tableBody.removeChild(tableRow);
+      const albums = Array.from(tableBody.children).map((row) => ({
+        _id: row.dataset.albumId,
+        title: row.querySelector('td:nth-child(1)').textContent.trim(),
+        artist: row.querySelector('td:nth-child(2)').textContent.trim(),
+        year: row.querySelector('td:nth-child(3)').textContent.trim(),
+        genre: row.querySelector('td:nth-child(4)').textContent.trim(),
+      }));
+      document.querySelector('#album-table').remove();
+      createTable(albums);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }

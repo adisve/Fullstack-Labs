@@ -91,6 +91,7 @@ app.delete('/api/albums/:id', async (req, res) => {
       await db
         .collection('albums')
         .deleteOne({ _id: new ObjectId(req.params.id) });
+      console.log(`Album '${req.params.id}' was successfully deleted`);
     } else {
       res.status(404).json({ message: 'Album not found' });
     }
