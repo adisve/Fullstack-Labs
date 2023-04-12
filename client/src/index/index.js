@@ -1,4 +1,4 @@
-import './styles.scss';
+import '../scss/styles.scss';
 import { createTable, createNewAlbumButton, createHeader } from './utils.js';
 
 const url = 'http://localhost:8080/api';
@@ -32,6 +32,5 @@ async function createNewAlbum(title, artist, year, genre, tracks) {
   let album = await response.json();
   return album;
 }
-
 
 start();

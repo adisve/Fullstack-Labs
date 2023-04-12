@@ -8,9 +8,9 @@ export function createHeader() {
   root.appendChild(header);
 }
 
-export function createTable(albums) {
+export function createTable() {
   const root = document.querySelector('#root');
-  if (albums) {
+  getAllAlbums().then((albums) => {
     const tableHead = `
       <thead>
         <tr>
@@ -61,11 +61,7 @@ export function createTable(albums) {
         deleteAlbum(index);
       });
     });
-  } else {
-    getAllAlbums().then((albums) => {
-      createTable(albums);
-    });
-  }
+  });
 }
 
 export function createNewAlbumButton() {
@@ -78,12 +74,17 @@ export function createNewAlbumButton() {
 }
 
 export async function getAllAlbums() {
-  let response = await fetch(`${url}/albums/`);
-  let albums = await response.json();
-  return albums;
+  try {
+    const response = await fetch(`${url}/albums/`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }
 
-async function updateAlbum(index) {
+function updateAlbum(index) {
   const tableRow = document.querySelector(`#album-${index}`);
   const id = tableRow.dataset.albumId;
   const title = tableRow.querySelector('td:nth-child(1)').textContent.trim();
@@ -91,38 +92,29 @@ async function updateAlbum(index) {
   const year = tableRow.querySelector('td:nth-child(3)').textContent.trim();
   const genre = tableRow.querySelector('td:nth-child(4)').textContent.trim();
 
-  const response = await fetch(`${url}/albums/${id}`, {
+  fetch(`${url}/albums/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ title, artist, year, genre }),
-  });
-
-  const updatedAlbum = await response.json();
-  tableRow.querySelector('td:nth-child(1)').textContent = updatedAlbum.title;
-  tableRow.querySelector('td:nth-child(2)').textContent = updatedAlbum.artist;
-  tableRow.querySelector('td:nth-child(3)').textContent = updatedAlbum.year;
-  tableRow.querySelector('td:nth-child(4)').textContent = updatedAlbum.genre;
+  })
+    .then((response) => {
+      console.log(`Updated album: ${response}`);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
-async function deleteAlbum(index) {
+function deleteAlbum(index) {
   const tableRow = document.querySelector(`#album-${index}`);
   const id = tableRow.dataset.albumId;
   fetch(`${url}/albums/${id}`, {
     method: 'DELETE',
   })
     .then((_) => {
-      const tableBody = document.querySelector('#album-table tbody');
-      tableBody.removeChild(tableRow);
-      const albums = Array.from(tableBody.children).map((row) => ({
-        _id: row.dataset.albumId,
-        title: row.querySelector('td:nth-child(1)').textContent.trim(),
-        artist: row.querySelector('td:nth-child(2)').textContent.trim(),
-        year: row.querySelector('td:nth-child(3)').textContent.trim(),
-        genre: row.querySelector('td:nth-child(4)').textContent.trim(),
-      }));
-      document.querySelector('#album-table').remove();
+      tableRow.remove();
       createTable(albums);
     })
     .catch((error) => {

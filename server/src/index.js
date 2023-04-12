@@ -70,6 +70,7 @@ app.put('/api/albums/:id', async (req, res) => {
         .collection('albums')
         .updateOne({ _id: new ObjectId(req.params.id) }, { $set: album });
       console.log('Album updated successfully');
+      res.status(200).json({ message: 'Album updated successfully' });
     } else {
       console.error('Album not found');
       res.status(404).json({ message: 'Album not found' });
@@ -92,6 +93,7 @@ app.delete('/api/albums/:id', async (req, res) => {
         .collection('albums')
         .deleteOne({ _id: new ObjectId(req.params.id) });
       console.log(`Album '${req.params.id}' was successfully deleted`);
+      res.status(200).json({ message: 'Album deleted successfully' });
     } else {
       res.status(404).json({ message: 'Album not found' });
     }

@@ -6,6 +6,10 @@
   margin-right: 10%;
 }
 
+* {
+  font-family: 'Quicksand', sans-serif;
+}
+
 #header {
   font-weight: 700;
   padding-top: 20px;
@@ -41,6 +45,7 @@
 }
 
 .button {
+  font-weight: 700;
   padding: 10px;
   appearance: none;
   background-color: #2ea44f;
@@ -56,11 +61,6 @@
   position: relative;
   text-align: center;
   text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  white-space: nowrap;
 
   &:focus:not(:focus-visible):not(.focus-visible) {
     box-shadow: none;
@@ -78,6 +78,7 @@
 }
 
 .button-delete {
+  font-weight: 700;
   padding: 10px;
   appearance: none;
   background-color: #df2525;
@@ -93,11 +94,6 @@
   position: relative;
   text-align: center;
   text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  white-space: nowrap;
 
   &:focus:not(:focus-visible):not(.focus-visible) {
     box-shadow: none;
@@ -114,9 +110,8 @@
   }
 }
 
-// #7494ec
-
 .button-update {
+  font-weight: 700;
   padding: 10px;
   appearance: none;
   background-color: #7494ec;
@@ -132,11 +127,6 @@
   position: relative;
   text-align: center;
   text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  white-space: nowrap;
 
   &:focus:not(:focus-visible):not(.focus-visible) {
     box-shadow: none;
