@@ -22,39 +22,49 @@ export function createTable() {
   const root = document.querySelector('#root');
   getAllAlbums().then((albums) => {
     const tableHead = `
-            <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Artist</th> 
-                  <th>Year</th>
-                  <th>Genre</th>
-                  <th>Edit</th>
-                </tr>
-            </thead>
-        `;
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th class='artist-header' style='display: none;'>Artist</th> 
+          <th class='year-header' style='display: none;'>Year</th>
+          <th class='genre-header' style='display: none;'>Genre</th>
+          <th class='track-header' style='display: none;'>Tracks</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+    `;
     const tableRows = albums.map((album, index) => {
       return `
-            <tr id='album-${index}' data-album-id='${album._id}'>
-                <td contentEditable>${album.title}</td>
-                <td contentEditable>${album.artist}</td>
-                <td contentEditable>${album.year}</td>
-                <td contentEditable>${album.genre}</td>
-                <td style="line-height: 50px; text-align: center;">
-                  <button class='button' id='show-details-${index}'>Details</button>
-                  <button class='button-update' id='update-${index}'>Update</button>
-                  <button class='button-delete' id='delete-${index}'>Delete</button>
-              </td>
-            </tr>
-        `;
+        <tr id='album-${index}' data-album-id='${album._id}'>
+          <td contentEditable>${album.title}</td>
+          <td class='artist' style='display: none;' contentEditable>${
+            album.artist
+          }</td>
+          <td class='year' style='display: none;' contentEditable>${
+            album.year
+          }</td>
+          <td class='genre' style='display: none;' contentEditable>${
+            album.genre
+          }</td>
+          <td class='tracks' style='display: none;' contentEditable>${album.tracks.join(
+            ', '
+          )}</td>
+          <td style="line-height: 50px; text-align: center;">
+            <button class='button show-details-button' id='show-details-${index}'>Show details</button>
+            <button class='button-update' id='update-${index}'>Update</button>
+            <button class='button-delete' id='delete-${index}'>Delete</button>
+          </td>
+        </tr>
+      `;
     });
     const content = `
-            <table id='album-table' class="styled-table">
-                ${tableHead}
-                <tbody>
-                  ${tableRows.join('')}
-                </tbody>
-            </table>
-        `;
+      <table id='album-table' class="styled-table">
+        ${tableHead}
+        <tbody>
+          ${tableRows.join('')}
+        </tbody>
+      </table>
+    `;
     const table = document.createElement('div');
     table.innerHTML = content;
     root.appendChild(table);
@@ -156,13 +166,14 @@ export async function updateAlbum(index) {
   const artist = tableRow.querySelector('td:nth-child(2)').textContent.trim();
   const year = tableRow.querySelector('td:nth-child(3)').textContent.trim();
   const genre = tableRow.querySelector('td:nth-child(4)').textContent.trim();
+  const tracks = tableRow.querySelector('td:nth-child(5)').textContent.trim();
 
   await fetch(`${url}/albums/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ title, artist, year, genre }),
+    body: JSON.stringify({ title, artist, year, genre, tracks }),
   });
 }
 
@@ -172,6 +183,7 @@ export async function updateAlbum(index) {
 function addButtonListeners() {
   const updateButtons = document.querySelectorAll('.button-update');
   const deleteButtons = document.querySelectorAll('.button-delete');
+  const showDetailsButtons = document.querySelectorAll('.show-details-button');
   deleteButtons.forEach((button, index) => {
     button.addEventListener('click', () => {
       console.log(`Pressed delete button for album ${index}`);
@@ -182,6 +194,40 @@ function addButtonListeners() {
     button.addEventListener('click', () => {
       console.log(`Pressed update button for album ${index}`);
       updateAlbum(index);
+    });
+  });
+  showDetailsButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const tableRow = button.parentNode.parentNode;
+      const artistCell = tableRow.querySelector('.artist');
+      const yearCell = tableRow.querySelector('.year');
+      const genreCell = tableRow.querySelector('.genre');
+      const artistHeader = document.querySelector('.artist-header');
+      const yearHeader = document.querySelector('.year-header');
+      const genreHeader = document.querySelector('.genre-header');
+      const tracksHeader = document.querySelector('.track-header');
+      const tracksCell = tableRow.querySelector('.tracks');
+      if (artistCell.style.display === 'none') {
+        artistCell.style.display = 'table-cell';
+        yearCell.style.display = 'table-cell';
+        genreCell.style.display = 'table-cell';
+        tracksCell.style.display = 'table-cell';
+        artistHeader.style.display = 'table-cell';
+        yearHeader.style.display = 'table-cell';
+        genreHeader.style.display = 'table-cell';
+        tracksHeader.style.display = 'table-cell';
+        button.textContent = 'Hide details';
+      } else {
+        artistCell.style.display = 'none';
+        yearCell.style.display = 'none';
+        genreCell.style.display = 'none';
+        tracksCell.style.display = 'none';
+        artistHeader.style.display = 'none';
+        yearHeader.style.display = 'none';
+        genreHeader.style.display = 'none';
+        tracksHeader.style.display = 'none';
+        button.textContent = 'Show details';
+      }
     });
   });
 }
