@@ -24,6 +24,16 @@ async function getAlbumsByTitle(title) {
   return albums;
 }
 
+/**
+ * Creates a new album given the parameters,
+ * builds the object and sends it to the server
+ * @param {string} title
+ * @param {string} artist
+ * @param {string} year
+ * @param {string} genre
+ * @param {string} tracks
+ * @returns
+ */
 async function createNewAlbum(title, artist, year, genre, tracks) {
   let response = await fetch(`${url}/albums/`, {
     method: 'POST',
