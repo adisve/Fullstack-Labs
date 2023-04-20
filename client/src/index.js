@@ -1,11 +1,11 @@
 import './styles.scss';
-import { createTable, createNewAlbumButton, createHeader } from './utils.js';
+import { createTable, createHeader, createNewAlbumTable } from './utils.js';
 
 const url = 'http://localhost:8080/api';
 
 async function start() {
   createHeader();
-  createNewAlbumButton();
+  createNewAlbumTable();
   createTable();
 }
 
@@ -32,9 +32,5 @@ async function createNewAlbum(title, artist, year, genre, tracks) {
   let album = await response.json();
   return album;
 }
-
-
-
-async function deleteAlbum(id) {}
 
 start();
