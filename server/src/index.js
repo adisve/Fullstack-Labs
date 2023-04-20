@@ -11,16 +11,22 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.redirect('/api/albums');
 });
 
-app.get('/api/albums', async (req, res) => {
+/**
+ * Get all the albums stored in MongoDB
+ */
+app.get('/api/albums', async (_, res) => {
   const db = getDb();
   const albums = await db.collection('albums').find().toArray();
   res.json(albums);
 });
 
+/**
+ * Get an album by title
+ */
 app.get('/api/albums/:title', async (req, res) => {
   try {
     const db = getDb();
@@ -38,6 +44,9 @@ app.get('/api/albums/:title', async (req, res) => {
   }
 });
 
+/**
+ * Create a new album
+ */
 app.post('/api/albums', async (req, res) => {
   try {
     const db = getDb();
@@ -57,6 +66,9 @@ app.post('/api/albums', async (req, res) => {
   }
 });
 
+/**
+ * Update an album by id
+ */
 app.put('/api/albums/:id', async (req, res) => {
   try {
     const db = getDb();
@@ -79,6 +91,9 @@ app.put('/api/albums/:id', async (req, res) => {
   }
 });
 
+/**
+ * Delete an album by id
+ */
 app.delete('/api/albums/:id', async (req, res) => {
   try {
     const db = getDb();
@@ -100,6 +115,9 @@ app.delete('/api/albums/:id', async (req, res) => {
   }
 });
 
+/**
+ * Start the server
+ */
 app.listen(port, async () => {
   await connectToDatabase();
   console.log(`Example app listening at http://localhost:${port}`);
