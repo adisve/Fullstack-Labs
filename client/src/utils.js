@@ -1,5 +1,12 @@
+/**
+ * @fileoverview Utility functions for the client side.
+ */
 const url = 'http://localhost:8080/api';
 
+/**
+ * Create main html page header and
+ * append it to the root element
+ */
 export function createHeader() {
   const root = document.querySelector('#root');
   const header = document.createElement('h1');
@@ -8,6 +15,9 @@ export function createHeader() {
   root.appendChild(header);
 }
 
+/**
+ * Create a table with all albums retrieved from MongoDB
+ */
 export function createTable() {
   const root = document.querySelector('#root');
   getAllAlbums().then((albums) => {
@@ -48,31 +58,24 @@ export function createTable() {
     const table = document.createElement('div');
     table.innerHTML = content;
     root.appendChild(table);
-
-    // add event listeners to the update buttons
-    const updateButtons = document.querySelectorAll('.button-update');
-    const deleteButtons = document.querySelectorAll('.button-delete');
-    deleteButtons.forEach((button, index) => {
-      button.addEventListener('click', () => {
-        console.log(`Pressed delete button for album ${index}`);
-        deleteAlbum(index);
-      });
-    });
-    updateButtons.forEach((button, index) => {
-      button.addEventListener('click', () => {
-        console.log(`Pressed update button for album ${index}`);
-        updateAlbum(index);
-      });
-    });
+    addButtonListeners();
   });
 }
 
+/**
+ * Retrieves all albums from MongoDB
+ * @returns Array of all albums
+ */
 export async function getAllAlbums() {
   let response = await fetch(`${url}/albums/`);
   let albums = await response.json();
   return albums;
 }
 
+/**
+ * Creates the table for creating a new album
+ * @param {string} id
+ */
 export async function createNewAlbumTable() {
   const root = document.querySelector('#root');
   const createAlbumTable = document.createElement('div');
@@ -105,7 +108,90 @@ export async function createNewAlbumTable() {
     `;
   createAlbumTable.innerHTML = content;
   root.appendChild(createAlbumTable);
-  document.querySelector('#create-album').addEventListener('click', () => {
+  addCreateAlbumButtonListener();
+}
+
+/**
+ * Creates an album based on object data
+ * @param {string} title
+ * @param {string} artist
+ * @param {string} year
+ * @param {string} genre
+ * @param {Array} tracks
+ */
+async function createAlbum(title, artist, year, genre, tracks) {
+  await fetch(`${url}/albums/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ title, artist, year, genre, tracks }),
+  });
+  clearCreateAlbumTable();
+  createTable();
+}
+
+/**
+ * Deletes an album based on id
+ * @param {string} id
+ */
+async function deleteAlbum(id) {
+  const tableRow = document.querySelector(`#album-${id}`);
+  const albumId = tableRow.dataset.albumId;
+  await fetch(`${url}/albums/${albumId}`, {
+    method: 'DELETE',
+  });
+  document.querySelector('#album-table').remove();
+  createTable();
+}
+
+/**
+ * Updates an album based on id
+ * @param {int} index
+ */
+export async function updateAlbum(index) {
+  const tableRow = document.querySelector(`#album-${index}`);
+  const id = tableRow.dataset.albumId;
+  const title = tableRow.querySelector('td:nth-child(1)').textContent.trim();
+  const artist = tableRow.querySelector('td:nth-child(2)').textContent.trim();
+  const year = tableRow.querySelector('td:nth-child(3)').textContent.trim();
+  const genre = tableRow.querySelector('td:nth-child(4)').textContent.trim();
+
+  await fetch(`${url}/albums/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ title, artist, year, genre }),
+  });
+}
+
+/**
+ * Adds event listeners to all buttons in album-table
+ */
+function addButtonListeners() {
+  const updateButtons = document.querySelectorAll('.button-update');
+  const deleteButtons = document.querySelectorAll('.button-delete');
+  deleteButtons.forEach((button, index) => {
+    button.addEventListener('click', () => {
+      console.log(`Pressed delete button for album ${index}`);
+      deleteAlbum(index);
+    });
+  });
+  updateButtons.forEach((button, index) => {
+    button.addEventListener('click', () => {
+      console.log(`Pressed update button for album ${index}`);
+      updateAlbum(index);
+    });
+  });
+}
+
+/**
+ * Adds event listener to 'Create album' button
+ */
+function addCreateAlbumButtonListener() {
+  const createAlbumButton = document.querySelector('#create-album');
+  createAlbumButton.addEventListener('click', () => {
     console.log('Pressed create album button');
     let title = document
       .querySelector('#create-album-table td:nth-child(1)')
@@ -126,16 +212,10 @@ export async function createNewAlbumTable() {
   });
 }
 
-async function createAlbum(title, artist, year, genre, tracks) {
-  await fetch(`${url}/albums/`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ title, artist, year, genre, tracks }),
-  });
-
-  // Clear content in create-album-table
+/**
+ * Clears the table for creating a new album
+ */
+function clearCreateAlbumTable() {
   document.querySelector('#create-album-table td:nth-child(1)').textContent =
     '';
   document.querySelector('#create-album-table td:nth-child(2)').textContent =
@@ -146,32 +226,4 @@ async function createAlbum(title, artist, year, genre, tracks) {
     '';
   document.querySelector('#create-album-table td:nth-child(5)').textContent =
     '';
-  createTable();
-}
-
-async function deleteAlbum(id) {
-  const tableRow = document.querySelector(`#album-${id}`);
-  const albumId = tableRow.dataset.albumId;
-  await fetch(`${url}/albums/${albumId}`, {
-    method: 'DELETE',
-  });
-  document.querySelector('#album-table').remove();
-  createTable();
-}
-
-export async function updateAlbum(index) {
-  const tableRow = document.querySelector(`#album-${index}`);
-  const id = tableRow.dataset.albumId;
-  const title = tableRow.querySelector('td:nth-child(1)').textContent.trim();
-  const artist = tableRow.querySelector('td:nth-child(2)').textContent.trim();
-  const year = tableRow.querySelector('td:nth-child(3)').textContent.trim();
-  const genre = tableRow.querySelector('td:nth-child(4)').textContent.trim();
-
-  await fetch(`${url}/albums/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ title, artist, year, genre }),
-  });
 }

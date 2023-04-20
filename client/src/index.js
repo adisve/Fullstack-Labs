@@ -3,12 +3,21 @@ import { createTable, createHeader, createNewAlbumTable } from './utils.js';
 
 const url = 'http://localhost:8080/api';
 
+/**
+ * Initial function loading header and two tables,
+ * one for all albums and one for creating a new album
+ */
 async function start() {
   createHeader();
   createNewAlbumTable();
   createTable();
 }
 
+/**
+ *
+ * @param {string} title
+ * @returns Album object
+ */
 async function getAlbumsByTitle(title) {
   let response = await fetch(`${url}/albums/${title}`);
   let albums = await response.json();
