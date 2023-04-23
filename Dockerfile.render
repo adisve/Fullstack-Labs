@@ -1,0 +1,22 @@
+# Build the client
+FROM node:14-alpine AS client-builder
+WORKDIR /client
+COPY client/package*.json ./
+RUN npm install
+COPY client/ .
+RUN npm run build
+
+# Build the server
+FROM node:14-alpine AS server-builder
+WORKDIR /server
+COPY server/package*.json ./
+RUN npm install
+COPY server/ .
+RUN npm run build
+
+# Build the final image
+FROM node:14-alpine
+WORKDIR /
+COPY --from=client-builder /client/build ./client
+COPY --from=server-builder /server/dist ./server
+CMD ["node", "./server/index.js"]
