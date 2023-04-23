@@ -7,3 +7,5 @@ buildCommand: |
   cd ../server
   npm install
 startCommand: node index.js
+env:
+  CONNECTION_URL: ${{ secrets.CONNECTION_URL }}
