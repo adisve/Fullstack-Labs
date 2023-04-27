@@ -1,4 +1,4 @@
-const url = 'http://localhost:8080/api';
+const url = 'https://fullstack-lab-2-rksf.onrender.com/api';
 
 /**
  * Retrieves all albums from MongoDB

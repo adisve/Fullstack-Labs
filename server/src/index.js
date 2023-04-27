@@ -7,8 +7,7 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
 
 const app = express();
-const host = process.env.HOST || 'localhost';
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 10000;
 
 app.use(cors());
 app.use(express.json());
@@ -124,5 +123,5 @@ app.delete('/api/albums/:id', async (req, res) => {
  */
 app.listen(port, async () => {
   await connectToDatabase();
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`App available at https://fullstack-lab-2-rksf.onrender.com`);
 });
