@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const { ObjectId } = require('mongodb');
 const { connectToDatabase, getDb } = require('./database');
 const cors = require('cors');
@@ -11,8 +12,10 @@ const port = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, '..', 'dist')));
+
 app.get('/', (_, res) => {
-  res.redirect('/api/albums');
+  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'), _, _);
 });
 
 /**
