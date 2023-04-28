@@ -65,3 +65,5 @@ The Express server now serves the aforementioned HTML file on the endpoint '/' o
 In render.com I then created a web service that uses a Docker image and makes use of my Dockerfile that exists in the root of my project. Render also creates a `config.env` folder when deploying, which I point to in my express server and mongodb connection by referencing the absolute etc/ path.
 
 Initially, I had quite some issues figuring out a nice way to bundle things together and how to serve the files that I wanted, and whether I should use Docker or not. I also had some issues referencing the config.env file as a relative path, so I ended up just using the absolute path. In the end, I decided that this was a pretty good way of delegating the interaction between server and client folders.
+
+My Render hosted Web Service can be found here --> [Fullstack-Lab-2](https://fullstack-lab-2-rksf.onrender.com)
