@@ -4,7 +4,7 @@ const { ObjectId } = require('mongodb');
 const { connectToDatabase, getDb } = require('./database');
 const cors = require('cors');
 const dotenv = require('dotenv');
-dotenv.config({ path: '../../config.env' });
+dotenv.config({ path: '/etc/secrets/config.env' });
 
 const app = express();
 const port = process.env.PORT || 10000;
