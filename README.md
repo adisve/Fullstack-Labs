@@ -1,4 +1,4 @@
-## Technical solution
+## Lab 1 - Technical Solution
 
 ### Server
 
@@ -49,3 +49,19 @@ The index.js file contains nothing more than a simple start function, that first
 <br>
 
 Styling is done in the styles.scss folder, to give the webpage some minor flair. I did not face any problems with this lab and it went quite smoothly.
+
+<br>
+
+## Lab 2 - Technical Solution
+
+### Client
+
+For the second lab, I implemented Webpack so I could bundle the client resources (including CSS, JavaScript, and HTML files) into a dist folder. This allows me at runtime to bundle any JavaScript resources into a common file, as well as transpile the SCSS into CSS when bundling.
+
+### Server
+
+The Express server now serves the aforementioned HTML file on the endpoint '/' of the URL. It is treated as a static resource, which it receives from the dist/ folder. To make this possible, I used Docker to do the work for me and create a container, which also moves the dist/ folder from the client into the server/ folder, so it can serve the necessary HTMl. Any endpoints that act as ways of communicating with MongoDB Atlas are reached via the /api/ prefix.
+
+In render.com I then created a web service that uses a Docker image and makes use of my Dockerfile that exists in the root of my project. Render also creates a `config.env` folder when deploying, which I point to in my express server and mongodb connection by referencing the absolute etc/ path.
+
+Initially, I had quite some issues figuring out a nice way to bundle things together and how to serve the files that I wanted, and whether I should use Docker or not. I also had some issues referencing the config.env file as a relative path, so I ended up just using the absolute path. In the end, I decided that this was a pretty good way of delegating the interaction between server and client folders.
